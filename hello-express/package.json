@@ -1,13 +1,14 @@
 {
   "name": "hello-express",
   "version": "1.0.0",
-  "description": "",
+  "description": "project to getting started with express",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start":
   },
-  "author": "Egor",
-  "license": "ISC",
+  "author": "eogr",
+  "license": "MIT",
   "dependencies": {
     "express": "^4.14.0"
   }
