@@ -10,9 +10,13 @@ weather(function(msg) {
   console.log(msg)
 })
 
-locaiton(function(location){
+location(function(location){
+  if (!location) {
+    console.log('Location doesnt exist')
+    return
+  }
   console.log('City:' + location.city)
-  console.log('log/lat:' locaiton.loc )
+  console.log('log/lat:' + location.loc )
 })
 
 console.log("After Request!")
