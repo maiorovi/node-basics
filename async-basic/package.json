@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "request": "^2.78.0"
+    "request": "^2.78.0",
+    "yargs": "^6.4.0"
   }
 }
