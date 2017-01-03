@@ -11,22 +11,24 @@ var todos = [];
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(function(req, res, next) {
+app.use((req, res, next)  => {
    res.header("Content-Type", "application/json");
    next();
 });
 
-app.get('/', function(req, res) {
+app.get('/', (req, res) => {
    res.send('Todo API root');
 });
 
-app.get('/todos', function(req, res) {
+app.get('/todos', (req, res) => {
    res.send(JSON.stringify(todos));
 });
 
-app.get('/todos/:id', function(req, res) {
-    var lookUpId = req.params.id;
-    var todoItem = _.findWhere(todos, {id : lookUpId});
+app.get('/todos/:id', (req, res) => {
+    var lookUpId = parseInt(req.params.id);
+
+    var todoItem = _.findWhere(todos, {id:lookUpId});
+
     if (todoItem) {
         res.status(200).send(JSON.stringify(todoItem));
     } else {
@@ -34,7 +36,7 @@ app.get('/todos/:id', function(req, res) {
     }
 });
 
-app.post('/todos', function(req, res) {
+app.post('/todos', (req, res) => {
    var body = _.pick(req.body, 'description', 'completed');
    console.log(req.body.completed);
 
@@ -51,6 +53,39 @@ app.post('/todos', function(req, res) {
    res.status(200).send(JSON.stringify(body));
 });
 
-app.listen(PORT, function() {
+app.delete('/todos/:id', (req, res) => {
+    var lookUpId = parseInt(req.params.id);
+    var todoToRemove = _.findWhere(todos, {id : lookUpId});
+
+    if (!todoToRemove) {
+        res.status(404).json({"error":"no todo found with that id"});
+    } else {
+        todos = _.without(todos, todoToRemove);
+        res.status(200).json({"status" : "completed"});
+    }
+
+});
+
+
+// app.put('/todos/:id'), (req, res) => {
+//     var lookUpId = parseInt(req.params.id, 10);
+//     var body = _.pick(req.body, 'description', 'completed');
+//     var validAttributes = {};
+//
+//     if (body.has)
+//
+//     var todoToUpdate = _.findWhere(todos, {id:lookUpId});
+//
+//
+//     if (!todoToUpdate) {
+//         res.status(404).json({"status":"no todo found with that id"})
+//     } else {
+//         todos = _.without(todos, todoToUpdate);
+//         todos.push()
+//     }
+//
+// }
+
+app.listen(PORT, () => {
    console.log('express server is listening on PORT: ' + PORT);
 })
