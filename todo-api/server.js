@@ -5,8 +5,6 @@ var PORT = process.env.PORT || 5001;
 var todoNextId = 1;
 var _ = require('underscore');
 
-
-
 var todos = [];
 
 app.use(bodyParser.json());
@@ -66,26 +64,35 @@ app.delete('/todos/:id', (req, res) => {
 
 });
 
+app.put('/todos/:id', (req, res) => {
+    console.log("Hello");
+    console.log(req.params.id);
+    var lookUpId = parseInt(req.params.id);
+    var matchedTodoItem = _.findWhere(todos, {id:lookUpId});
+    var body = _.pick(req.body, 'description', 'completed');
+    var validAttributes = {};
 
-// app.put('/todos/:id'), (req, res) => {
-//     var lookUpId = parseInt(req.params.id, 10);
-//     var body = _.pick(req.body, 'description', 'completed');
-//     var validAttributes = {};
-//
-//     if (body.has)
-//
-//     var todoToUpdate = _.findWhere(todos, {id:lookUpId});
-//
-//
-//     if (!todoToUpdate) {
-//         res.status(404).json({"status":"no todo found with that id"})
-//     } else {
-//         todos = _.without(todos, todoToUpdate);
-//         todos.push()
-//     }
-//
-// }
+    if (!matchedTodoItem) {
+        return res.status(404).send();
+    }
+
+    if (body.hasOwnProperty('completed') && _.isBoolean(body.completed)) {
+        validAttributes.completed = body.completed;
+    } else if(body.hasOwnProperty('completed') &&!_.isBoolean(body.completed)) {
+        return res.status(400).send();
+    }
+
+    if (body.hasOwnProperty('description') && _.isString(body.description) && body.description.trim().length > 0) {
+        validAttributes.description = body.description;
+    } else if(body.hasOwnProperty('description')) {
+        return res.status(400).send();
+    }
+
+    _.extend(matchedTodoItem, validAttributes);
+
+    res.status(200).send();
+});
 
 app.listen(PORT, () => {
    console.log('express server is listening on PORT: ' + PORT);
-})
+});
