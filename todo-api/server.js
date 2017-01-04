@@ -19,7 +19,14 @@ app.get('/', (req, res) => {
 });
 
 app.get('/todos', (req, res) => {
-   res.send(JSON.stringify(todos));
+    var queryParams = req.query;
+    console.log(queryParams.completed);
+
+    if (queryParams.hasOwnProperty(completed)) {
+        filteredTodos = _.where(todos, {completed: (queryParams.completed === 'true')});
+    }
+
+   res.send(JSON.stringify(filteredTodos));
 });
 
 app.get('/todos/:id', (req, res) => {
@@ -36,7 +43,6 @@ app.get('/todos/:id', (req, res) => {
 
 app.post('/todos', (req, res) => {
    var body = _.pick(req.body, 'description', 'completed');
-   console.log(req.body.completed);
 
    if (!_.isBoolean(body.completed) || !_.isString(body.description) || body.description.trim().length === 0) {
       return res.status(400).send();
