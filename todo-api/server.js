@@ -21,10 +21,17 @@ app.get('/', (req, res) => {
 app.get('/todos', (req, res) => {
     var queryParams = req.query;
     console.log(queryParams.completed);
+    console.log(queryParams.description);
+    filteredTodos = todos;
 
-    if (queryParams.hasOwnProperty(completed)) {
+    if (queryParams.hasOwnProperty("completed")) {
         filteredTodos = _.where(todos, {completed: (queryParams.completed === 'true')});
     }
+
+    if (queryParams.hasOwnProperty("description"))
+        filteredTodos = _.filter(filteredTodos, (todo) => {
+           return todo.description.indexOf(queryParams.description) !== -1
+        });
 
    res.send(JSON.stringify(filteredTodos));
 });
