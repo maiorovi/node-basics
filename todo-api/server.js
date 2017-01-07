@@ -39,13 +39,15 @@ app.get('/todos', (req, res) => {
 app.get('/todos/:id', (req, res) => {
     var lookUpId = parseInt(req.params.id);
 
-    var todoItem = _.findWhere(todos, {id: lookUpId});
-
-    if (todoItem) {
-        res.status(200).send(JSON.stringify(todoItem));
-    } else {
-        res.status(404).send("item with id not fount: " + lookUpId);
-    }
+    db.todo.findById(lookUpId).then((todo) => {
+        if (!!todo) {
+            res.json(todo.toJSON());
+        } else {
+            res.status(404).json({description : "object with id " + lookUpId + " not found"});
+        }
+    }, (e) => {
+        res.status(500).json(e)
+    });
 });
 
 app.post('/todos', (req, res) => {
