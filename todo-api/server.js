@@ -19,21 +19,24 @@ app.get('/', (req, res) => {
 });
 
 app.get('/todos', (req, res) => {
-    var queryParams = req.query;
-    console.log(queryParams.completed);
-    console.log(queryParams.description);
-    filteredTodos = todos;
+    var query = req.query;
+    var where = {};
 
-    if (queryParams.hasOwnProperty("completed")) {
-        filteredTodos = _.where(todos, {completed: (queryParams.completed === 'true')});
+    if (query.hasOwnProperty('completed')) {
+        where.completed = (query.completed === 'true')
     }
 
-    if (queryParams.hasOwnProperty("description"))
-        filteredTodos = _.filter(filteredTodos, (todo) => {
-            return todo.description.indexOf(queryParams.description) !== -1
-        });
+    if (query.hasOwnProperty('description') && query.description.length > 0) {
+        where.description = {$like : '%'+query.description+'%'}
+    }
 
-    res.send(JSON.stringify(filteredTodos));
+    db.todo.findAll({
+        where : where
+    }).then((todos) => {
+        res.json(todos)
+    }, (e) => {
+        res.status(500).json(e);
+    });
 });
 
 app.get('/todos/:id', (req, res) => {
