@@ -27,11 +27,11 @@ app.get('/todos', (req, res) => {
     }
 
     if (query.hasOwnProperty('description') && query.description.length > 0) {
-        where.description = {$like : '%'+query.description+'%'}
+        where.description = {$like: '%' + query.description + '%'}
     }
 
     db.todo.findAll({
-        where : where
+        where: where
     }).then((todos) => {
         res.json(todos)
     }, (e) => {
@@ -46,7 +46,7 @@ app.get('/todos/:id', (req, res) => {
         if (!!todo) {
             res.json(todo.toJSON());
         } else {
-            res.status(404).json({description : "object with id " + lookUpId + " not found"});
+            res.status(404).json({description: "object with id " + lookUpId + " not found"});
         }
     }, (e) => {
         res.status(500).json(e)
@@ -67,42 +67,43 @@ app.delete('/todos/:id', (req, res) => {
     var lookUpId = parseInt(req.params.id);
     var todoToRemove = _.findWhere(todos, {id: lookUpId});
 
-    if (!todoToRemove) {
-        res.status(404).json({"error": "no todo found with that id"});
-    } else {
-        todos = _.without(todos, todoToRemove);
-        res.status(200).json({"status": "completed"});
-    }
-
+    db.todo.findById(lookUpId).then((todo) => {
+        if (todo) {
+            db.todo.destroy({where: {id: req.params.id}});
+            res.json({"status": "completed"});
+        } else {
+            res.status(404).json({"error": "no todo found with that id"});
+        }
+    })
 });
 
 app.put('/todos/:id', (req, res) => {
-    console.log("Hello");
-    console.log(req.params.id);
     var lookUpId = parseInt(req.params.id);
-    var matchedTodoItem = _.findWhere(todos, {id: lookUpId});
-    var body = _.pick(req.body, 'description', 'completed');
-    var validAttributes = {};
+    var body =req.body;
+    var attributes = {};
 
-    if (!matchedTodoItem) {
-        return res.status(404).send();
+    if (body.hasOwnProperty('completed')) {
+        db.todo.attributes.completed = body.completed;
     }
 
-    if (body.hasOwnProperty('completed') && _.isBoolean(body.completed)) {
-        validAttributes.completed = body.completed;
-    } else if (body.hasOwnProperty('completed') && !_.isBoolean(body.completed)) {
-        return res.status(400).send();
+    if (body.hasOwnProperty('description')) {
+        attributes.description = body.description;
     }
 
-    if (body.hasOwnProperty('description') && _.isString(body.description) && body.description.trim().length > 0) {
-        validAttributes.description = body.description;
-    } else if (body.hasOwnProperty('description')) {
-        return res.status(400).send();
-    }
-
-    _.extend(matchedTodoItem, validAttributes);
-
-    res.status(200).send();
+    db.todo.update(attributes, {
+        where: {
+            id : lookUpId
+        }
+    }).then((todo) => {
+        console.log(todo);
+        if (todo[0] != 0) {
+            res.status(200).json({status: "completed"})
+        } else {
+            res.status(404).json({status: "not found"})
+        }
+    }, (e) => {
+        res.status(500).json(e);
+    });
 });
 
 db.sequilize.sync().then(() => {
