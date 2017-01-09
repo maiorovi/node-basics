@@ -6,6 +6,7 @@ var sequilize = new Sequilize(undefined, undefined, undefined, {
 
 var db =  {
     todo : sequilize.import(__dirname + '/models/todo.js'),
+    user : sequilize.import(__dirname + '/models/user.js'),
     sequilize : sequilize,
     Sequilize : Sequilize
 };
