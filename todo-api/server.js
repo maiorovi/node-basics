@@ -116,7 +116,7 @@ app.post('/users', (req, res) => {
     });
 })
 
-db.sequilize.sync().then(() => {
+db.sequilize.sync({force:true}).then(() => {
     app.listen(PORT, () => {
         console.log('express server is listening on PORT: ' + PORT);
     });
