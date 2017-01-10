@@ -110,7 +110,7 @@ app.post('/users', (req, res) => {
     var user = _.pick(req.body, 'password', 'email');
 
     db.user.create(user).then((user) => {
-        res.json(user.toJSON());
+        res.json(user.toPublicJSON());
     }, (e) => {
         res.status(400).json(e)
     });
