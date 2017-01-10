@@ -1,5 +1,5 @@
-bcrypt = require("bcrypt-nodejs");
-_ = require("underscore");
+var bcrypt = require("bcrypt-nodejs");
+var _ = require("underscore");
 
 module.exports = function(sequelize, DataTypes) {
     return sequelize.define('user' , {
