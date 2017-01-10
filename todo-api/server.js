@@ -6,6 +6,7 @@ var todoNextId = 1;
 var _ = require('underscore');
 var db = require('./db')
 var todos = [];
+var usersApi = require('./user-api.js')
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -106,15 +107,7 @@ app.put('/todos/:id', (req, res) => {
     });
 });
 
-app.post('/users', (req, res) => {
-    var user = _.pick(req.body, 'password', 'email');
-
-    db.user.create(user).then((user) => {
-        res.json(user.toPublicJSON());
-    }, (e) => {
-        res.status(400).json(e)
-    });
-})
+app.use('/users', usersApi);
 
 db.sequilize.sync({force:true}).then(() => {
     app.listen(PORT, () => {
