@@ -1,3 +1,5 @@
+'use strict'
+
 var bcrypt = require("bcrypt-nodejs");
 var _ = require("underscore");
 
@@ -38,6 +40,32 @@ module.exports = function(sequelize, DataTypes) {
                 if (typeof user.email === 'string') {
                     user.email = user.email.toLowerCase();
                 }
+            }
+        },
+        classMethods: {
+            authenticate: function(body) {
+                return new Promise((resolve, reject) => {
+
+                    if (!_.isString(body.email) || !_.isString(body.password)) {
+                            return reject();
+                        }
+
+                    this.findOne({
+                            where: {
+                                email: body.email
+                            }
+                        }).then((user) => {
+                            if (!user) {
+                                return reject();
+                            } else if (bcrypt.hashSync(body.password, user.salt) === user.password_hash) {
+                                return resolve(user.toPublicJSON());
+                            } else {
+                                return reject();
+                            }
+                        }, (e) => {
+                            reject();
+                        });
+                });
             }
         },
         instanceMethods: {

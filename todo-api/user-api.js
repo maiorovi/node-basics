@@ -16,26 +16,11 @@ db.user.create(user).then((user) => {
 
 router.post('/login', (req, res) => {
     var body = _.pick(req.body, 'email', 'password');
-    console.log(body);
-    if (!_.isString(body.email) || !_.isString(body.password)) {
-        res.status(400).json({status : "failed", description: "email or password is not string"})
-    }
 
-    db.user.findOne({
-        where: {
-            email: body.email
-        }
-    }).then((user) => {
-
-        if (!user) {
-            res.status(404).json({status: "failed", descrioption:"user does not exists"})
-        } else if (bcrypt.hashSync(body.password, user.salt) === user.password_hash) {
-            res.status(200).json({status:"successful", description:"authenticated"})
-        } else {
-            res.status(401).json({status:"failed", description: "authentication failed"})
-        }
+    db.user.authenticate(body).then((user) => {
+        res.json(user);
     }, (e) => {
-        res.status(500).json(e)
+        res.status(401).send();
     });
 });
 
