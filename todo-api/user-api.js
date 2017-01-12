@@ -1,3 +1,5 @@
+'use strict';
+
 var express = require('express');
 var router = express.Router();
 var db = require('./db');
@@ -18,7 +20,7 @@ router.post('/login', (req, res) => {
     var body = _.pick(req.body, 'email', 'password');
 
     db.user.authenticate(body).then((user) => {
-        res.json(user);
+        res.header('Auth', user.generateToken('authentication')).json(user.toPublicJSON());
     }, (e) => {
         res.status(401).send();
     });
