@@ -68,6 +68,11 @@ module.exports = function(sequelize, DataTypes) {
                             reject();
                         });
                 });
+            },
+            findByToken : function() {
+                return new Promise((resolve, reject) => {
+
+                });
             }
         },
         instanceMethods: {

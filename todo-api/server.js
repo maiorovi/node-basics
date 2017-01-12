@@ -7,9 +7,11 @@ var _ = require('underscore');
 var db = require('./db')
 var todos = [];
 var usersApi = require('./user-api.js')
+var middleware = require('./middleware')(db);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
+app.use(middleware.requireAuthentication);
 app.use((req, res, next) => {
     res.header("Content-Type", "application/json");
     next();
