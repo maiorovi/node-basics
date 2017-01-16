@@ -11,7 +11,6 @@ var middleware = require('./middleware')(db);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
-app.use(middleware.requireAuthentication);
 app.use((req, res, next) => {
     res.header("Content-Type", "application/json");
     next();
@@ -21,7 +20,7 @@ app.get('/', (req, res) => {
     res.send('Todo API root');
 });
 
-app.get('/todos', (req, res) => {
+app.get('/todos', middleware.requireAuthentication, (req, res) => {
     var query = req.query;
     var where = {};
 
@@ -42,7 +41,7 @@ app.get('/todos', (req, res) => {
     });
 });
 
-app.get('/todos/:id', (req, res) => {
+app.get('/todos/:id',middleware.requireAuthentication, (req, res) => {
     var lookUpId = parseInt(req.params.id);
 
     db.todo.findById(lookUpId).then((todo) => {
@@ -56,7 +55,7 @@ app.get('/todos/:id', (req, res) => {
     });
 });
 
-app.post('/todos', (req, res) => {
+app.post('/todos', middleware.requireAuthentication, (req, res) => {
     console.log(req.body);
     var body = _.pick(req.body, 'description', 'completed');
     db.todo.create(body).then((todo) => {
@@ -66,7 +65,7 @@ app.post('/todos', (req, res) => {
     });
 });
 
-app.delete('/todos/:id', (req, res) => {
+app.delete('/todos/:id', middleware.requireAuthentication, (req, res) => {
     var lookUpId = parseInt(req.params.id);
     var todoToRemove = _.findWhere(todos, {id: lookUpId});
 
@@ -80,7 +79,7 @@ app.delete('/todos/:id', (req, res) => {
     })
 });
 
-app.put('/todos/:id', (req, res) => {
+app.put('/todos/:id', middleware.requireAuthentication, (req, res) => {
     var lookUpId = parseInt(req.params.id);
     var body =req.body;
     var attributes = {};
