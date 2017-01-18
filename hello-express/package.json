@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
-  "author": "eogr",
+  "author": "egor",
   "license": "MIT",
   "dependencies": {
     "express": "^4.14.0"
